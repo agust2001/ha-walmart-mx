@@ -125,10 +125,6 @@ SENSORS: tuple[WalmartSensorDescription, ...] = (
         },
     ),
     WalmartSensorDescription(
-        key="availability",
-        value_fn=lambda c: c.data.availability_status,
-    ),
-    WalmartSensorDescription(
         key="rating",
         suggested_display_precision=1,
         value_fn=lambda c: c.data.rating,

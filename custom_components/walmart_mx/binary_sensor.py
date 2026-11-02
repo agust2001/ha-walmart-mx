@@ -1,4 +1,4 @@
-"""Sensores binarios: en stock, en oferta, en su precio mínimo histórico."""
+"""Sensores binarios: en oferta y en su precio mínimo histórico."""
 
 from __future__ import annotations
 
@@ -26,7 +26,6 @@ def _at_lowest(c: WalmartProductCoordinator) -> bool | None:
 
 
 BINARY_SENSORS: tuple[WalmartBinaryDescription, ...] = (
-    WalmartBinaryDescription(key="in_stock", is_on_fn=lambda c: c.data.available),
     WalmartBinaryDescription(key="on_sale", is_on_fn=lambda c: bool(c.data.savings) or c.data.rollback),
     WalmartBinaryDescription(key="at_lowest_price", is_on_fn=_at_lowest),
 )

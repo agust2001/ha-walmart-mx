@@ -31,9 +31,6 @@
       "price_history": {
         "default": "mdi:chart-line"
       },
-      "availability": {
-        "default": "mdi:store-check-outline"
-      },
       "rating": {
         "default": "mdi:star"
       },
@@ -51,12 +48,6 @@
       }
     },
     "binary_sensor": {
-      "in_stock": {
-        "default": "mdi:package-variant-closed-remove",
-        "state": {
-          "on": "mdi:package-variant-closed-check"
-        }
-      },
       "on_sale": {
         "default": "mdi:tag-outline",
         "state": {

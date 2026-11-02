@@ -64,8 +64,6 @@ class ProductData:
     savings: float | None = None
     discount_pct: float | None = None
     rollback: bool = False
-    available: bool = False
-    availability_status: str | None = None
     brand: str | None = None
     seller: str | None = None
     rating: float | None = None
@@ -110,7 +108,6 @@ def parse_product_html(html: str, product_id: str) -> ProductData:
         savings = round(was - price, 2)
     discount = round(100 * savings / was, 1) if savings and was else None
 
-    status = product.get("availabilityStatus")
     images = (product.get("imageInfo") or {}).get("allImages") or []
     image = images[0].get("url") if images else (product.get("imageInfo") or {}).get("thumbnailUrl")
     pid = product.get("usItemId") or product_id
@@ -124,8 +121,6 @@ def parse_product_html(html: str, product_id: str) -> ProductData:
         savings=savings or None,
         discount_pct=discount,
         rollback=bool((pi.get("priceDisplayCodes") or {}).get("rollback")),
-        available=status == "IN_STOCK",
-        availability_status=status.lower() if isinstance(status, str) else None,
         brand=product.get("brand"),
         seller=product.get("sellerDisplayName") or product.get("sellerName"),
         rating=_num(product.get("averageRating")),

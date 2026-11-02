@@ -2,6 +2,8 @@
 
 Integración para seguir el precio de productos de [walmart.com.mx](https://www.walmart.com.mx) desde Home Assistant: precio actual, ofertas, historial, mínimo y máximo, y un evento cada vez que cambia el precio para armar alertas.
 
+> No informa disponibilidad/stock: Walmart la calcula según una sucursal que deduce por la IP (y para envío a domicilio), así que no coincide con la sucursal que elijas en el sitio.
+
 > No es una integración oficial de Walmart. Walmart no tiene API pública: se lee la página del producto (los datos que la propia página trae embebidos). Si Walmart cambia su sitio puede dejar de funcionar hasta que se actualice la integración.
 
 ## Instalación
@@ -41,9 +43,7 @@ Cada producto se agrega por separado y queda como un dispositivo. Por defecto se
 | `sensor.…_ultimo_cambio_de_precio` | Diferencia del último cambio (negativo = bajó). Atributos: precio anterior, actual y %. |
 | `sensor.…_fecha_del_ultimo_cambio` | Cuándo cambió el precio por última vez. |
 | `sensor.…_historial_de_precios` | Cantidad de cambios registrados; atributo `history` con la lista `[{date, price}]` (últimos 100). |
-| `sensor.…_disponibilidad` | `in_stock`, `out_of_stock`, … |
 | `sensor.…_calificacion` / `sensor.…_resenas` | Estrellas y cantidad de reseñas. |
-| `binary_sensor.…_en_stock` | Disponible para comprar en línea. |
 | `binary_sensor.…_en_oferta` | Tiene rebaja / rollback. |
 | `binary_sensor.…_en_precio_minimo` | El precio actual es el más bajo registrado (y el precio ya cambió alguna vez). |
 | `image.…_foto` | Foto del producto. |
