@@ -8,7 +8,7 @@
           "product": "Link o ID del producto"
         },
         "data_description": {
-          "product": "ej: https://www.walmart.com.mx/ip/…/00800440001437"
+          "product": "ej: {example}"
         }
       }
     },

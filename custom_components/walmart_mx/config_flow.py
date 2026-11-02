@@ -63,6 +63,7 @@ class WalmartConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="user",
             data_schema=vol.Schema({vol.Required(CONF_PRODUCT): TextSelector()}),
             errors=errors,
+            description_placeholders={"example": "https://www.walmart.com.mx/ip/…/00800440001437"},
         )
 
     @staticmethod
