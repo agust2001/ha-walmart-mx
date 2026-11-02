@@ -1,0 +1,79 @@
+{
+  "entity": {
+    "sensor": {
+      "price": {
+        "default": "mdi:cash"
+      },
+      "was_price": {
+        "default": "mdi:cash-remove"
+      },
+      "savings": {
+        "default": "mdi:piggy-bank-outline"
+      },
+      "discount": {
+        "default": "mdi:sale"
+      },
+      "lowest_price": {
+        "default": "mdi:arrow-collapse-down"
+      },
+      "highest_price": {
+        "default": "mdi:arrow-collapse-up"
+      },
+      "price_vs_lowest": {
+        "default": "mdi:delta"
+      },
+      "last_price_change": {
+        "default": "mdi:swap-vertical"
+      },
+      "last_price_change_date": {
+        "default": "mdi:calendar-clock"
+      },
+      "price_history": {
+        "default": "mdi:chart-line"
+      },
+      "availability": {
+        "default": "mdi:store-check-outline"
+      },
+      "rating": {
+        "default": "mdi:star"
+      },
+      "reviews": {
+        "default": "mdi:comment-text-multiple-outline"
+      },
+      "order_limit": {
+        "default": "mdi:cart-arrow-up"
+      },
+      "seller": {
+        "default": "mdi:storefront-outline"
+      },
+      "last_check": {
+        "default": "mdi:update"
+      }
+    },
+    "binary_sensor": {
+      "in_stock": {
+        "default": "mdi:package-variant-closed-remove",
+        "state": {
+          "on": "mdi:package-variant-closed-check"
+        }
+      },
+      "on_sale": {
+        "default": "mdi:tag-outline",
+        "state": {
+          "on": "mdi:tag"
+        }
+      },
+      "at_lowest_price": {
+        "default": "mdi:trending-neutral",
+        "state": {
+          "on": "mdi:trending-down"
+        }
+      }
+    },
+    "button": {
+      "refresh": {
+        "default": "mdi:refresh"
+      }
+    }
+  }
+}

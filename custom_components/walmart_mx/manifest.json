@@ -1,0 +1,12 @@
+{
+  "domain": "walmart_mx",
+  "name": "Walmart México",
+  "codeowners": ["@agust2001"],
+  "config_flow": true,
+  "documentation": "https://github.com/agust2001/ha-walmart-mx",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/agust2001/ha-walmart-mx/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

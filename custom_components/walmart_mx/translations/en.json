@@ -1,0 +1,108 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add a Walmart México product",
+        "description": "Paste the product link from walmart.com.mx or its ID (the number at the end of the link).",
+        "data": {
+          "product": "Product link or ID"
+        },
+        "data_description": {
+          "product": "e.g. https://www.walmart.com.mx/ip/…/00800440001437"
+        }
+      }
+    },
+    "error": {
+      "invalid_product": "That doesn't look like a Walmart product link or ID",
+      "not_found": "Product not found on walmart.com.mx",
+      "blocked": "Walmart is rate limiting requests, try again in a few minutes",
+      "cannot_connect": "Could not connect to walmart.com.mx"
+    },
+    "abort": {
+      "already_configured": "This product is already added"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Update interval",
+        "data": {
+          "scan_interval": "Check price every (minutes)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "price": {
+        "name": "Price"
+      },
+      "was_price": {
+        "name": "Previous price"
+      },
+      "savings": {
+        "name": "Savings"
+      },
+      "discount": {
+        "name": "Discount"
+      },
+      "lowest_price": {
+        "name": "Lowest price"
+      },
+      "highest_price": {
+        "name": "Highest price"
+      },
+      "price_vs_lowest": {
+        "name": "Above lowest price"
+      },
+      "last_price_change": {
+        "name": "Last price change"
+      },
+      "last_price_change_date": {
+        "name": "Last price change date"
+      },
+      "price_history": {
+        "name": "Price history"
+      },
+      "availability": {
+        "name": "Availability"
+      },
+      "rating": {
+        "name": "Rating"
+      },
+      "reviews": {
+        "name": "Reviews"
+      },
+      "order_limit": {
+        "name": "Order limit"
+      },
+      "seller": {
+        "name": "Seller"
+      },
+      "last_check": {
+        "name": "Last check"
+      }
+    },
+    "binary_sensor": {
+      "in_stock": {
+        "name": "In stock"
+      },
+      "on_sale": {
+        "name": "On sale"
+      },
+      "at_lowest_price": {
+        "name": "At lowest price"
+      }
+    },
+    "button": {
+      "refresh": {
+        "name": "Update now"
+      }
+    },
+    "image": {
+      "photo": {
+        "name": "Photo"
+      }
+    }
+  }
+}

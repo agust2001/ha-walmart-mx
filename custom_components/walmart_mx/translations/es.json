@@ -1,0 +1,108 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Agregar producto de Walmart México",
+        "description": "Pega el link del producto de walmart.com.mx o su ID (el número al final del link).",
+        "data": {
+          "product": "Link o ID del producto"
+        },
+        "data_description": {
+          "product": "ej: https://www.walmart.com.mx/ip/…/00800440001437"
+        }
+      }
+    },
+    "error": {
+      "invalid_product": "No parece un link o ID de producto de Walmart",
+      "not_found": "No se encontró el producto en walmart.com.mx",
+      "blocked": "Walmart está frenando las consultas, intenta en unos minutos",
+      "cannot_connect": "No se pudo conectar con walmart.com.mx"
+    },
+    "abort": {
+      "already_configured": "Este producto ya está agregado"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Intervalo de actualización",
+        "data": {
+          "scan_interval": "Consultar el precio cada (minutos)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "price": {
+        "name": "Precio"
+      },
+      "was_price": {
+        "name": "Precio anterior"
+      },
+      "savings": {
+        "name": "Ahorro"
+      },
+      "discount": {
+        "name": "Descuento"
+      },
+      "lowest_price": {
+        "name": "Precio mínimo histórico"
+      },
+      "highest_price": {
+        "name": "Precio máximo histórico"
+      },
+      "price_vs_lowest": {
+        "name": "Diferencia con el mínimo"
+      },
+      "last_price_change": {
+        "name": "Último cambio de precio"
+      },
+      "last_price_change_date": {
+        "name": "Fecha del último cambio"
+      },
+      "price_history": {
+        "name": "Historial de precios"
+      },
+      "availability": {
+        "name": "Disponibilidad"
+      },
+      "rating": {
+        "name": "Calificación"
+      },
+      "reviews": {
+        "name": "Reseñas"
+      },
+      "order_limit": {
+        "name": "Límite por pedido"
+      },
+      "seller": {
+        "name": "Vendedor"
+      },
+      "last_check": {
+        "name": "Última consulta"
+      }
+    },
+    "binary_sensor": {
+      "in_stock": {
+        "name": "En stock"
+      },
+      "on_sale": {
+        "name": "En oferta"
+      },
+      "at_lowest_price": {
+        "name": "En precio mínimo"
+      }
+    },
+    "button": {
+      "refresh": {
+        "name": "Actualizar ahora"
+      }
+    },
+    "image": {
+      "photo": {
+        "name": "Foto"
+      }
+    }
+  }
+}
