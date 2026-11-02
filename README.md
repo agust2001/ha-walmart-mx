@@ -43,6 +43,7 @@ Cada producto se agrega por separado y queda como un dispositivo. Por defecto se
 | `sensor.…_ultimo_cambio_de_precio` | Diferencia del último cambio (negativo = bajó). Atributos: precio anterior, actual y %. |
 | `sensor.…_fecha_del_ultimo_cambio` | Cuándo cambió el precio por última vez. |
 | `sensor.…_historial_de_precios` | Cantidad de cambios registrados; atributo `history` con la lista `[{date, price}]` (últimos 100). |
+| `sensor.…_link` | URL de la página del producto en walmart.com.mx (para tarjetas que la abran). |
 | `sensor.…_calificacion` / `sensor.…_resenas` | Estrellas y cantidad de reseñas. |
 | `binary_sensor.…_en_oferta` | Tiene rebaja / rollback. |
 | `binary_sensor.…_en_precio_minimo` | El precio actual es el más bajo registrado (y el precio ya cambió alguna vez). |
@@ -68,6 +69,19 @@ lowest_price: 349.0
 ```
 
 ### Ejemplo: avisar cuando baja el precio
+
+### Tarjeta que abre la página del producto
+
+Con [button-card](https://github.com/custom-cards/button-card) (las plantillas `[[[ ]]]` leen el sensor `…_link`):
+
+```yaml
+type: custom:button-card
+entity: sensor.licor_de_hierbas_fernet_branca_750_ml_precio
+show_state: true
+tap_action:
+  action: url
+  url_path: "[[[ return states['sensor.licor_de_hierbas_fernet_branca_750_ml_link'].state; ]]]"
+```
 
 ```yaml
 alias: Walmart - bajó un precio

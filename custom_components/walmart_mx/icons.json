@@ -45,6 +45,9 @@
       },
       "last_check": {
         "default": "mdi:update"
+      },
+      "link": {
+        "default": "mdi:open-in-new"
       }
     },
     "binary_sensor": {

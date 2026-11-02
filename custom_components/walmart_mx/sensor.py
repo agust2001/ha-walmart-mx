@@ -141,6 +141,11 @@ SENSORS: tuple[WalmartSensorDescription, ...] = (
         value_fn=lambda c: c.data.order_limit,
     ),
     WalmartSensorDescription(
+        key="link",
+        # URL corta (/ip/producto/<id>): el estado de un sensor admite máximo 255 caracteres
+        value_fn=lambda c: c.data.url,
+    ),
+    WalmartSensorDescription(
         key="seller",
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda c: c.data.seller,

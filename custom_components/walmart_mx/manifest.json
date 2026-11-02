@@ -8,5 +8,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/agust2001/ha-walmart-mx/issues",
   "requirements": [],
-  "version": "0.2.0"
+  "version": "0.3.0"
 }

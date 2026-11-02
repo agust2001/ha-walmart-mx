@@ -78,6 +78,9 @@
       },
       "last_check": {
         "name": "Última consulta"
+      },
+      "link": {
+        "name": "Link"
       }
     },
     "binary_sensor": {
