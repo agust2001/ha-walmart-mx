@@ -27,6 +27,8 @@ CURRENCY = "MXN"
 class WalmartSensorDescription(SensorEntityDescription):
     value_fn: Callable[[WalmartProductCoordinator], Any]
     attrs_fn: Callable[[WalmartProductCoordinator], dict[str, Any]] | None = None
+    # sigue disponible aunque la última consulta haya fallado
+    always_available: bool = False
 
 
 def _diff(c: WalmartProductCoordinator) -> float | None:
@@ -117,6 +119,18 @@ SENSORS: tuple[WalmartSensorDescription, ...] = (
         value_fn=lambda c: c.history.last.date if c.history.previous and c.history.last else None,
     ),
     WalmartSensorDescription(
+        key="last_price_date",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        always_available=True,
+        value_fn=lambda c: c.history.last_seen,
+    ),
+    WalmartSensorDescription(
+        key="category",
+        always_available=True,
+        value_fn=lambda c: c.data.category,
+        attrs_fn=lambda c: {"path": c.data.category_path},
+    ),
+    WalmartSensorDescription(
         key="price_history",
         value_fn=lambda c: len(c.history.changes),
         attrs_fn=lambda c: {
@@ -176,6 +190,10 @@ class WalmartSensor(WalmartEntity, SensorEntity):
     def __init__(self, coordinator: WalmartProductCoordinator, description: WalmartSensorDescription) -> None:
         super().__init__(coordinator, description.key)
         self.entity_description = description
+
+    @property
+    def available(self) -> bool:
+        return self.entity_description.always_available or super().available
 
     @property
     def native_value(self) -> Any:

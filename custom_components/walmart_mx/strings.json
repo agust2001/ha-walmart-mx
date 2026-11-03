@@ -79,6 +79,12 @@
       "last_check": {
         "name": "Last check"
       },
+      "last_price_date": {
+        "name": "Last price obtained"
+      },
+      "category": {
+        "name": "Category"
+      },
       "link": {
         "name": "Link"
       }

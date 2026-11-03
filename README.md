@@ -43,6 +43,8 @@ Cada producto se agrega por separado y queda como un dispositivo. Por defecto se
 | `sensor.…_ultimo_cambio_de_precio` | Diferencia del último cambio (negativo = bajó). Atributos: precio anterior, actual y %. |
 | `sensor.…_fecha_del_ultimo_cambio` | Cuándo cambió el precio por última vez. |
 | `sensor.…_historial_de_precios` | Cantidad de cambios registrados; atributo `history` con la lista `[{date, price}]` (últimos 100). |
+| `sensor.…_ultimo_precio_obtenido` | Cuándo se pudo leer el precio por última vez. Se guarda entre reinicios y sigue disponible aunque Walmart esté frenando las consultas. |
+| `sensor.…_categoria` | Categoría del producto en Walmart (ej. `Licores y Cremas`); atributo `path` con la ruta completa. |
 | `sensor.…_link` | URL de la página del producto en walmart.com.mx (para tarjetas que la abran). |
 | `sensor.…_calificacion` / `sensor.…_resenas` | Estrellas y cantidad de reseñas. |
 | `binary_sensor.…_en_oferta` | Tiene rebaja / rollback. |
@@ -130,7 +132,7 @@ series:
 
 ## Notas
 
-- Cada producto hace una consulta por intervalo. Con muchos productos y un intervalo corto, Walmart puede empezar a frenar las consultas; en ese caso las entidades quedan como no disponibles hasta la siguiente consulta exitosa.
+- Cada producto hace una consulta por intervalo. Con muchos productos y un intervalo corto, Walmart puede empezar a frenar las consultas; en ese caso las entidades quedan como no disponibles hasta la siguiente consulta exitosa, excepto `…_ultimo_precio_obtenido` y `…_categoria`.
 - La búsqueda de Walmart tiene captcha, por eso los productos se agregan por link o ID y no por nombre.
 
 ## Licencia

@@ -48,6 +48,7 @@ class PriceHistory:
     """Historial persistente de un producto (sobrevive reinicios de HA)."""
 
     first_seen: datetime | None = None
+    last_seen: datetime | None = None  # última vez que se pudo leer el precio
     lowest: PricePoint | None = None
     highest: PricePoint | None = None
     changes: list[PricePoint] = field(default_factory=list)  # un punto por cada precio distinto
@@ -63,6 +64,7 @@ class PriceHistory:
     def as_dict(self) -> dict[str, Any]:
         return {
             "first_seen": self.first_seen.isoformat() if self.first_seen else None,
+            "last_seen": self.last_seen.isoformat() if self.last_seen else None,
             "lowest": self.lowest.as_dict() if self.lowest else None,
             "highest": self.highest.as_dict() if self.highest else None,
             "changes": [p.as_dict() for p in self.changes],
@@ -74,6 +76,7 @@ class PriceHistory:
             return cls()
         return cls(
             first_seen=dt_util.parse_datetime(d["first_seen"]) if d.get("first_seen") else None,
+            last_seen=dt_util.parse_datetime(d["last_seen"]) if d.get("last_seen") else None,
             lowest=PricePoint.from_dict(d["lowest"]) if d.get("lowest") else None,
             highest=PricePoint.from_dict(d["highest"]) if d.get("highest") else None,
             changes=[PricePoint.from_dict(p) for p in d.get("changes") or []],
@@ -83,6 +86,7 @@ class PriceHistory:
         """Agrega un precio. Devuelve el punto anterior si el precio cambió."""
         if self.first_seen is None:
             self.first_seen = now
+        self.last_seen = now
         if self.lowest is None or price < self.lowest.price:
             self.lowest = PricePoint(price, now)
         if self.highest is None or price > self.highest.price:
@@ -130,7 +134,6 @@ class WalmartProductCoordinator(DataUpdateCoordinator[ProductData]):
         now = dt_util.utcnow()
         self.last_check = now
         if data.price is not None:
-            before = self.history.last
             anterior = self.history.register(data.price, now)
             if anterior is not None:
                 diff = round(data.price - anterior.price, 2)
@@ -148,6 +151,5 @@ class WalmartProductCoordinator(DataUpdateCoordinator[ProductData]):
                         "lowest_price": self.history.lowest.price if self.history.lowest else None,
                     },
                 )
-            if before is None or anterior is not None:
-                self._store.async_delay_save(self.history.as_dict, 10)
+            self._store.async_delay_save(self.history.as_dict, 10)
         return data

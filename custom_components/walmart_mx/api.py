@@ -72,6 +72,8 @@ class ProductData:
     image_url: str | None = None
     url: str = ""
     description: str | None = None
+    category: str | None = None
+    category_path: list[str] = field(default_factory=list)
     raw_price_info: dict[str, Any] = field(default_factory=dict, repr=False)
 
 
@@ -111,6 +113,8 @@ def parse_product_html(html: str, product_id: str) -> ProductData:
     images = (product.get("imageInfo") or {}).get("allImages") or []
     image = images[0].get("url") if images else (product.get("imageInfo") or {}).get("thumbnailUrl")
     pid = product.get("usItemId") or product_id
+    # ruta de categorías de la página, de la más general a la más específica
+    category_path = [c["name"] for c in (product.get("category") or {}).get("path") or [] if c.get("name")]
 
     return ProductData(
         product_id=pid,
@@ -129,6 +133,8 @@ def parse_product_html(html: str, product_id: str) -> ProductData:
         image_url=image,
         url=product_url(pid),
         description=product.get("shortDescription"),
+        category=category_path[-1] if category_path else None,
+        category_path=category_path,
         raw_price_info=pi,
     )
 

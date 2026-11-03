@@ -46,6 +46,12 @@
       "last_check": {
         "default": "mdi:update"
       },
+      "last_price_date": {
+        "default": "mdi:calendar-check"
+      },
+      "category": {
+        "default": "mdi:shape-outline"
+      },
       "link": {
         "default": "mdi:open-in-new"
       }
