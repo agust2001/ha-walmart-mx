@@ -18,10 +18,13 @@ _REMOVED_KEYS = ("in_stock", "availability")
 async def async_setup_entry(hass: HomeAssistant, entry: WalmartConfigEntry) -> bool:
     _remove_old_entities(hass, entry)
     coordinator = WalmartProductCoordinator(hass, entry)
-    await coordinator.async_config_entry_first_refresh()
+    await coordinator.async_load_stored()
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     entry.async_on_unload(entry.add_update_listener(_async_reload))
+    # sin esperar: las consultas van de a una y no deben demorar el arranque de HA
+    if coordinator.is_stale:
+        entry.async_create_background_task(hass, coordinator.async_refresh(), f"{DOMAIN} {coordinator.product_id}")
     return True
 
 

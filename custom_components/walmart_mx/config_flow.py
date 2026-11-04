@@ -25,6 +25,7 @@ from .const import (
     MAX_SCAN_INTERVAL,
     MIN_SCAN_INTERVAL,
 )
+from .coordinator import async_get_throttle
 
 CONF_PRODUCT = "product"
 
@@ -43,7 +44,7 @@ class WalmartConfigFlow(ConfigFlow, domain=DOMAIN):
             else:
                 await self.async_set_unique_id(product_id)
                 self._abort_if_unique_id_configured()
-                client = WalmartClient(async_get_clientsession(self.hass))
+                client = WalmartClient(async_get_clientsession(self.hass), async_get_throttle(self.hass))
                 try:
                     product = await client.async_get_product(product_id)
                 except ProductNotFound:

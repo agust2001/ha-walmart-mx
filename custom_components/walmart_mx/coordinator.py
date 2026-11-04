@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from datetime import datetime
 from typing import Any
 
@@ -14,7 +14,15 @@ from homeassistant.helpers.storage import Store
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
-from .api import ProductData, ProductNotFound, WalmartBlocked, WalmartClient, WalmartError
+from .api import (
+    ProductData,
+    ProductNotFound,
+    WalmartBlocked,
+    WalmartClient,
+    WalmartError,
+    WalmartThrottle,
+    product_url,
+)
 from .const import (
     CONF_PRODUCT_ID,
     CONF_SCAN_INTERVAL,
@@ -28,6 +36,11 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 WalmartConfigEntry = ConfigEntry["WalmartProductCoordinator"]
+
+
+def async_get_throttle(hass: HomeAssistant) -> WalmartThrottle:
+    """El límite de consultas es uno solo para todos los productos."""
+    return hass.data.setdefault(DOMAIN, WalmartThrottle())
 
 
 @dataclass
@@ -113,13 +126,39 @@ class WalmartProductCoordinator(DataUpdateCoordinator[ProductData]):
             name=f"{DOMAIN} {self.product_id}",
             update_interval=scan_interval(entry.options.get(CONF_SCAN_INTERVAL)),
         )
-        self.client = WalmartClient(async_get_clientsession(hass))
+        self.throttle = async_get_throttle(hass)
+        self.client = WalmartClient(async_get_clientsession(hass), self.throttle)
         self._store: Store[dict[str, Any]] = Store(hass, STORAGE_VERSION, f"{DOMAIN}.{self.product_id}")
         self.history = PriceHistory()
         self.last_check: datetime | None = None
 
-    async def _async_setup(self) -> None:
-        self.history = PriceHistory.from_dict(await self._store.async_load())
+    async def async_load_stored(self) -> None:
+        """Carga lo guardado para arrancar sin depender de que Walmart responda."""
+        stored = await self._store.async_load() or {}
+        self.history = PriceHistory.from_dict(stored)
+        product = stored.get("product")
+        if product:
+            known = {f.name for f in fields(ProductData)}
+            self.data = ProductData(**{k: v for k, v in product.items() if k in known})
+        else:
+            # guardado por una versión anterior: solo se conoce el nombre y el precio
+            self.data = ProductData(
+                product_id=self.product_id,
+                name=self.config_entry.title,
+                price=self.history.last.price if self.history.last else None,
+                url=product_url(self.product_id),
+            )
+
+    @property
+    def is_stale(self) -> bool:
+        """Si ya pasó el intervalo desde la última lectura del precio."""
+        seen = self.history.last_seen
+        return seen is None or dt_util.utcnow() - seen >= self.update_interval
+
+    def _stored_data(self) -> dict[str, Any]:
+        product = asdict(self.data)
+        del product["raw_price_info"]
+        return {**self.history.as_dict(), "product": product}
 
     async def _async_update_data(self) -> ProductData:
         try:
@@ -127,7 +166,8 @@ class WalmartProductCoordinator(DataUpdateCoordinator[ProductData]):
         except ProductNotFound as err:
             raise UpdateFailed(f"Producto {self.product_id} no encontrado en Walmart") from err
         except WalmartBlocked as err:
-            raise UpdateFailed(f"Walmart está frenando las consultas: {err}") from err
+            _LOGGER.debug("%s: se mantiene el último dato: %s", self.product_id, err)
+            return self.data
         except WalmartError as err:
             raise UpdateFailed(str(err)) from err
 
@@ -151,5 +191,5 @@ class WalmartProductCoordinator(DataUpdateCoordinator[ProductData]):
                         "lowest_price": self.history.lowest.price if self.history.lowest else None,
                     },
                 )
-            self._store.async_delay_save(self.history.as_dict, 10)
+        self._store.async_delay_save(self._stored_data, 10)
         return data

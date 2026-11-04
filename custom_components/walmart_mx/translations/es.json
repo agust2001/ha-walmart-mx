@@ -15,7 +15,7 @@
     "error": {
       "invalid_product": "No parece un link o ID de producto de Walmart",
       "not_found": "No se encontró el producto en walmart.com.mx",
-      "blocked": "Walmart está frenando las consultas, intenta en unos minutos",
+      "blocked": "Walmart está frenando las consultas, intenta más tarde",
       "cannot_connect": "No se pudo conectar con walmart.com.mx"
     },
     "abort": {

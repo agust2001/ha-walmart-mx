@@ -27,7 +27,7 @@ https://www.walmart.com.mx/ip/Licor-de-Hierbas-Fernet-Branca-750-ml/008004400014
 00800440001437
 ```
 
-Cada producto se agrega por separado y queda como un dispositivo. Por defecto se consulta **una vez por hora**; se puede cambiar en **Configurar** (de 15 minutos a 24 horas).
+Cada producto se agrega por separado y queda como un dispositivo. Por defecto se consulta **cada 6 horas**; se puede cambiar en **Configurar** (de 1 a 24 horas).
 
 ## Entidades por producto
 
@@ -132,7 +132,7 @@ series:
 
 ## Notas
 
-- Cada producto hace una consulta por intervalo. Con muchos productos y un intervalo corto, Walmart puede empezar a frenar las consultas; en ese caso las entidades quedan como no disponibles hasta la siguiente consulta exitosa, excepto `…_ultimo_precio_obtenido` y `…_categoria`.
+- Cada producto hace una consulta por intervalo, de a una y con 20 segundos entre cada una. Si Walmart frena las consultas, se pausan las de todos los productos durante 6 horas (el doble con cada bloqueo seguido, hasta 24 horas). Mientras tanto las entidades conservan el último dato; `…_ultimo_precio_obtenido` indica de cuándo es.
 - La búsqueda de Walmart tiene captcha, por eso los productos se agregan por link o ID y no por nombre.
 
 ## Licencia

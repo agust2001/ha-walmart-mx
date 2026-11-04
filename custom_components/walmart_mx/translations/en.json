@@ -15,7 +15,7 @@
     "error": {
       "invalid_product": "That doesn't look like a Walmart product link or ID",
       "not_found": "Product not found on walmart.com.mx",
-      "blocked": "Walmart is rate limiting requests, try again in a few minutes",
+      "blocked": "Walmart is rate limiting requests, try again later",
       "cannot_connect": "Could not connect to walmart.com.mx"
     },
     "abort": {

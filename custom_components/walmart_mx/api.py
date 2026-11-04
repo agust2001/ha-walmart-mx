@@ -7,12 +7,26 @@ Este módulo solo depende de aiohttp para poder probarse fuera de Home Assistant
 
 from __future__ import annotations
 
+import asyncio
+from collections.abc import Awaitable, Callable
 import json
+import logging
 import re
+import time
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, TypeVar
 
 import aiohttp
+
+_LOGGER = logging.getLogger(__name__)
+_T = TypeVar("_T")
+
+# Las consultas de todos los productos van de a una, con esta pausa entre cada una
+REQUEST_GAP = 20  # segundos
+# Si Walmart frena las consultas no se le pregunta nada durante este tiempo,
+# que se duplica con cada bloqueo seguido
+BLOCK_PAUSE = 6 * 60 * 60  # segundos
+MAX_BLOCK_PAUSE = 24 * 60 * 60
 
 BASE_URL = "https://www.walmart.com.mx"
 _HEADERS = {
@@ -38,6 +52,45 @@ class ProductNotFound(WalmartError):
 
 class WalmartBlocked(WalmartError):
     """Walmart está frenando las consultas (anti-bot, captcha o límite)."""
+
+
+class WalmartPaused(WalmartBlocked):
+    """No se consultó: sigue vigente la pausa por un bloqueo anterior."""
+
+
+class WalmartThrottle:
+    """Compartido por todos los productos: una consulta a la vez y pausa si hay bloqueo."""
+
+    def __init__(self) -> None:
+        self._lock = asyncio.Lock()
+        self._last_request: float | None = None
+        self._paused_until = 0.0
+        self._blocks = 0
+
+    @property
+    def pause_remaining(self) -> float:
+        """Segundos que faltan para volver a consultar (0 si no hay pausa)."""
+        return max(0.0, self._paused_until - time.monotonic())
+
+    async def async_run(self, request: Callable[[], Awaitable[_T]]) -> _T:
+        async with self._lock:
+            if self.pause_remaining:
+                raise WalmartPaused(f"Consultas en pausa por {self.pause_remaining / 3600:.1f} h más")
+            if self._last_request is not None:
+                await asyncio.sleep(max(0.0, self._last_request + REQUEST_GAP - time.monotonic()))
+            try:
+                result = await request()
+            except WalmartBlocked as err:
+                pause = min(BLOCK_PAUSE * 2**self._blocks, MAX_BLOCK_PAUSE)
+                self._blocks += 1
+                self._paused_until = time.monotonic() + pause
+                _LOGGER.warning("%s. Se pausan las consultas por %.0f h", err, pause / 3600)
+                raise
+            else:
+                self._blocks = 0
+                return result
+            finally:
+                self._last_request = time.monotonic()
 
 
 def parse_product_id(text: str) -> str | None:
@@ -142,10 +195,14 @@ def parse_product_html(html: str, product_id: str) -> ProductData:
 class WalmartClient:
     """Consulta productos de walmart.com.mx."""
 
-    def __init__(self, session: aiohttp.ClientSession) -> None:
+    def __init__(self, session: aiohttp.ClientSession, throttle: WalmartThrottle) -> None:
         self._session = session
+        self._throttle = throttle
 
     async def async_get_product(self, product_id: str) -> ProductData:
+        return await self._throttle.async_run(lambda: self._async_fetch_product(product_id))
+
+    async def _async_fetch_product(self, product_id: str) -> ProductData:
         try:
             async with self._session.get(
                 product_url(product_id),
@@ -158,6 +215,8 @@ class WalmartClient:
                     raise WalmartBlocked(f"Walmart respondió {resp.status}")
                 if resp.status != 200:
                     raise WalmartError(f"Walmart respondió {resp.status}")
+                if resp.url.path.startswith("/blocked"):
+                    raise WalmartBlocked("Walmart redirigió a su página de bloqueo")
                 html = await resp.text()
         except (aiohttp.ClientError, TimeoutError) as err:
             raise WalmartError(f"Error de conexión: {err}") from err
